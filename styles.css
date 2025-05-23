@@ -54,14 +54,20 @@ body {
         margin: 20px; /* Add space around the content */
 
     padding: 30px;
-    border-radius: 30px; /* Framer: 30px */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    width: 90%;
+    border-radius: 8px; /* Optional: for rounded corners */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* Optional: for a subtle shadow */
+    position: relative; /* Useful for positioning elements like a close button inside */
+    margin: 20px; /* This creates a 20px gap on all sides */
+    box-sizing: border-box;
+    width: auto; /* Let content determine width */
+    height: auto; /* Let content determine height */
     max-width: 500px;
     opacity: 0;
     display: flex; /* Added for flex layout */
     flex-direction: column; /* Stack header and body vertically */
-    max-height: 85vh; /* Example: Limit modal height to 85% of viewport height */
+    max-width: calc(100vw - 40px); 
+    max-height: calc(100vh - 40px); 
+    overflow-y: auto;
     transform: scale(0.95) translateY(15px);
     transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s;
     /* will-change helps browsers optimize animations */
