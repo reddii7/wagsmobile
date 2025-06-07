@@ -1,0 +1,10 @@
+.fancynavbar {
+  background-color: #000 !important; /* Set your desired solid color */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Optional: subtle shadow */
+  backdrop-filter: none !important; /* Remove any blur effects */
+  opacity: 1 !important; /* Ensure full opacity */
+}
+
+body {
+    background-color: #000; /* Match navbar color */
+  }
