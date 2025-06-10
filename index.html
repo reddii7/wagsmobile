@@ -1,116 +1,146 @@
-<!DOCTYPE html>
+Of course. Here is the complete, self-contained code in a single index.html file.
 
-<html lang="en" style="background: #000 !important;">
+You can just copy and paste this entire block of code into a new file named index.html, place your 01.mp4 video in the same folder, and open the file in a mobile browser.
+
+index.html (All-in-One File)
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Video</title>
+    <!-- This viewport tag is CRITICAL for mobile-first design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Video</title>
+
+    <!-- CSS is now inside the HTML file in a <style> tag -->
     <style>
-        * {
-            margin: 0 !important;
-            padding: 0 !important;
-            box-sizing: border-box !important;
-            background: #000 !important;
+        /* Reset default browser styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars */
+            font-family: sans-serif;
         }
 
-```
-    html {
-        background: #000 !important;
-        background-color: #000 !important;
-    }
+        #fullscreen-video {
+            /* Position the video to cover the entire screen */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            /* 
+              This is the most important property.
+              It scales the video to cover the container while maintaining its aspect ratio.
+              The video will be cropped if its aspect ratio doesn't match the screen's.
+            */
+            object-fit: cover;
 
-    body {
-        background: #000 !important;
-        background-color: #000 !important;
-        overflow: hidden !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-    }
+            /* Place the video behind other content */
+            z-index: -1; 
+        }
 
-    video {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        min-height: calc(100vh + env(safe-area-inset-top)) !important;
-        margin-top: calc(-1 * env(safe-area-inset-top)) !important;
-        object-fit: cover !important;
-        background: #000 !important;
-        background-color: #000 !important;
-        z-index: 9999 !important;
-    }
+        #video-overlay {
+            /* Position the overlay on top of the video */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            /* Center the button */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Ensure it's on top of the video */
+            z-index: 1;
+        }
 
-    video::-webkit-media-controls {
-        display: none !important;
-    }
+        #unmute-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    video::-webkit-media-controls-panel {
-        display: none !important;
-    }
-</style>
-```
-
+        #unmute-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
 </head>
-<body style="background: #000 !important; background-color: #000 !important;">
-    <video 
-        autoplay 
-        muted 
-        loop 
-        playsinline 
-        webkit-playsinline
-        preload="auto"
-        style="position: absolute !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; min-height: calc(100vh + env(safe-area-inset-top)) !important; margin-top: calc(-1 * env(safe-area-inset-top)) !important; object-fit: cover !important; background: #000 !important; background-color: #000 !important; z-index: 9999 !important;">>
+<body>
+
+    <!-- The Video Element -->
+    <!--
+      - autoplay: Tries to play the video automatically.
+      - muted: REQUIRED for autoplay to work on most modern browsers.
+      - loop: Makes the video repeat.
+      - playsinline: Prevents the video from going into native fullscreen on iOS.
+    -->
+    <video id="fullscreen-video" autoplay muted loop playsinline>
         <source src="01.mp4" type="video/mp4">
-        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+        Your browser does not support the video tag.
     </video>
 
-```
-<script>
-    document.documentElement.style.background = '#000';
-    document.documentElement.style.backgroundColor = '#000';
-    document.body.style.background = '#000';
-    document.body.style.backgroundColor = '#000';
-    
-    const video = document.querySelector('video');
-    
-    video.style.background = '#000';
-    video.style.backgroundColor = '#000';
-    
-    video.addEventListener('loadeddata', () => {
-        console.log('Video loaded successfully');
-        video.play().catch((error) => {
-            console.log('Autoplay failed:', error);
-            document.addEventListener('click', () => video.play(), { once: true });
-            document.addEventListener('touchstart', () => video.play(), { once: true });
+    <!-- Optional: Overlay with an unmute button for user interaction -->
+    <div id="video-overlay">
+        <button id="unmute-button">Tap to Unmute</button>
+    </div>
+
+    <!-- JavaScript is now inside the HTML file in a <script> tag -->
+    <script>
+        const video = document.getElementById('fullscreen-video');
+        const unmuteButton = document.getElementById('unmute-button');
+        const overlay = document.getElementById('video-overlay');
+
+        unmuteButton.addEventListener('click', () => {
+            if (video.muted) {
+                video.muted = false;
+                unmuteButton.textContent = 'Mute';
+            } else {
+                video.muted = true;
+                unmuteButton.textContent = 'Unmute';
+            }
         });
-    });
+        
+        // Optional: Hide the button after a few seconds of inactivity
+        let timeout;
+        function hideButton() {
+            timeout = setTimeout(() => {
+                unmuteButton.style.opacity = '0';
+            }, 3000); // Hide after 3 seconds
+        }
 
-    video.addEventListener('error', (e) => {
-        console.error('Video error:', e);
-        console.error('Video error details:', video.error);
-    });
-
-    video.addEventListener('loadstart', () => {
-        console.log('Video loading started');
-    });
-
-    video.addEventListener('canplay', () => {
-        console.log('Video can play');
-    });
-
-    // Prevent context menu and interactions
-    video.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-    document.addEventListener('gesturestart', e => e.preventDefault());
-</script>
-```
+        function showButton() {
+            unmuteButton.style.opacity = '1';
+            clearTimeout(timeout);
+            hideButton();
+        }
+        
+        // Show button on mouse move or touch
+        overlay.addEventListener('mousemove', showButton);
+        overlay.addEventListener('touchstart', showButton);
+        
+        // Initial setup
+        showButton();
+    </script>
 
 </body>
 </html>
+content_copy
+download
+Use code with caution.
+Html
+How to Use
+Create a Folder: Make a new folder for your project.
+Save the Code: Copy the code above and save it as index.html inside that folder.
+Add Your Video: Place your video file, named 01.mp4, in the same folder as index.html.
+Open in Browser: Open the index.html file in a mobile browser (or use the mobile device simulator in a desktop browser like Chrome's DevTools).
+The video will automatically play, muted, and fill the entire screen up to the status bar, just as you requested. The user can then tap the button to toggle the sound. I've also added a small JavaScript enhancement to hide the unmute button after a few seconds of inactivity for a cleaner look.
