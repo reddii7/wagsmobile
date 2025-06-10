@@ -3,53 +3,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <meta name="apple-touch-fullscreen" content="yes">
+    <title>Full Screen Video</title>
     <style>
-        /* Force remove any default browser styling */
-        html {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
         * {
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
             box-sizing: border-box;
         }
 
 ```
-    html, body {
+    html {
         height: 100%;
         width: 100%;
         overflow: hidden;
         background: #000;
-    }
-
-    body {
-        /* Cover the status bar area */
-        padding: 0;
+        -webkit-text-size-adjust: 100%;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        /* Extend into status bar area */
-        padding-top: 0 !important;
-        margin-top: 0 !important;
     }
 
-    video {
-        width: 100vw;
+    body {
         height: 100vh;
-        object-fit: cover;
+        width: 100vw;
+        overflow: hidden;
+        background: #000;
         position: absolute;
         top: 0;
         left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        min-width: 100vw;
+        min-height: 100vh;
+        object-fit: cover;
         background: #000;
+        z-index: 1000;
     }
 
     /* Remove all video controls */
@@ -69,25 +73,60 @@
         display: none !important;
     }
 
-    /* Ensure full coverage on mobile - cover status bar */
-    video {
-        /* Extend beyond viewport to cover status bar and notch */
-        width: 100vw;
-        height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-        margin-top: calc(-1 * env(safe-area-inset-top));
-        top: 0;
-        left: 0;
+    video::-webkit-media-controls-enclosure {
+        display: none !important;
     }
 
-    /* PWA/Standalone mode adjustments - still cover everything */
-    @media (display-mode: standalone) {
-        body {
-            padding-top: 0 !important;
-        }
-        video {
-            height: calc(100vh + 50px);
-            margin-top: -25px;
-        }
+    video::-webkit-media-controls-timeline {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-current-time-display {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-time-remaining-display {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-seek-back-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-seek-forward-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-fullscreen-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-rewind-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-return-to-realtime-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-toggle-closed-captions-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-volume-slider {
+        display: none !important;
+    }
+
+    video::-moz-media-controls {
+        display: none !important;
+    }
+
+    video::controls {
+        display: none !important;
+    }
+
+    video[controls] {
+        controls: none !important;
     }
 </style>
 ```
@@ -101,7 +140,8 @@
         loop 
         playsinline 
         webkit-playsinline
-        preload="auto">
+        preload="auto"
+        style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 1000;">
         <source src="01.mp4" type="video/mp4">
     </video>
 
@@ -109,11 +149,25 @@
 <script>
     const video = document.getElementById('video');
 
-    // Ensure autoplay works
-    video.addEventListener('loadeddata', () => {
+    // Force video to cover entire screen immediately
+    function forceFullCoverage() {
+        video.style.position = 'absolute';
+        video.style.top = '0';
+        video.style.left = '0';
+        video.style.width = '100vw';
+        video.style.height = '100vh';
+        video.style.minWidth = '100vw';
+        video.style.minHeight = '100vh';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = '1000';
+        video.style.background = '#000';
+    }
+
+    // Apply on load
+    video.addEventListener('loadedmetadata', () => {
+        forceFullCoverage();
         video.play().catch(e => {
             console.log('Autoplay failed:', e);
-            // Try to play on first user interaction
             document.addEventListener('touchstart', () => {
                 video.play();
             }, { once: true });
@@ -124,17 +178,15 @@
         });
     });
 
+    // Force coverage on any resize or orientation change
+    window.addEventListener('resize', forceFullCoverage);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(forceFullCoverage, 100);
+    });
+
     // Prevent context menu
     video.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-    });
-
-    // Handle orientation changes
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            video.style.width = '100vw';
-            video.style.height = '100vh';
-        }, 100);
     });
 
     // Prevent scrolling/zooming
@@ -144,6 +196,20 @@
 
     document.addEventListener('gesturestart', (e) => {
         e.preventDefault();
+    });
+
+    // Apply initial styling immediately
+    forceFullCoverage();
+
+    // Enter fullscreen mode immediately (where supported)
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen().catch(() => {});
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen().catch(() => {});
+        }
     });
 </script>
 ```
