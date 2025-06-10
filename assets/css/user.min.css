@@ -1,0 +1,17 @@
+/* Ensure video is behind overlay and fills the section */
+#bigcartel-header .bg-holder {
+  position: relative;
+  overflow: hidden;
+}
+#bigcartel-header .bg-holder video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+#bigcartel-header .bg-holder.overlay:before {
+  z-index: 2;
+}
