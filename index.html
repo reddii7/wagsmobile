@@ -1,42 +1,50 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" style="background: #000 !important;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Full Screen Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Video</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+            background: #000 !important;
         }
 
 ```
-    html, body {
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
+    html {
         background: #000 !important;
+        background-color: #000 !important;
     }
 
-    #container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+    body {
         background: #000 !important;
+        background-color: #000 !important;
+        overflow: hidden !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
     }
 
     video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        object-fit: cover !important;
         background: #000 !important;
+        background-color: #000 !important;
+        z-index: 9999 !important;
     }
 
-    /* Hide all video controls */
     video::-webkit-media-controls {
         display: none !important;
     }
@@ -44,143 +52,45 @@
     video::-webkit-media-controls-panel {
         display: none !important;
     }
-
-    /* Fullscreen styles */
-    #container:-webkit-full-screen {
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #000 !important;
-    }
-
-    #container:-moz-full-screen {
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #000 !important;
-    }
-
-    #container:fullscreen {
-        width: 100vw !important;
-        height: 100vh !important;
-        background: #000 !important;
-    }
-
-    #container:-webkit-full-screen video {
-        width: 100vw;
-        height: 100vh;
-    }
-
-    #container:-moz-full-screen video {
-        width: 100vw;
-        height: 100vh;
-    }
-
-    #container:fullscreen video {
-        width: 100vw;
-        height: 100vh;
-    }
 </style>
 ```
 
 </head>
-<body>
-    <div id="container">
-        <video 
-            id="video" 
-            autoplay 
-            muted 
-            loop 
-            playsinline 
-            webkit-playsinline
-            preload="auto">
-            <source src="01.mp4" type="video/mp4">
-        </video>
-    </div>
+<body style="background: #000 !important; background-color: #000 !important;">
+    <video 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        webkit-playsinline
+        preload="auto"
+        style="position: absolute !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: cover !important; background: #000 !important; background-color: #000 !important; z-index: 9999 !important;">
+        <source src="01.mp4" type="video/mp4">
+    </video>
 
 ```
 <script>
-    const video = document.getElementById('video');
-    const container = document.getElementById('container');
-
-    // Function to enter fullscreen
-    function enterFullscreen() {
-        if (container.requestFullscreen) {
-            container.requestFullscreen();
-        } else if (container.webkitRequestFullscreen) {
-            container.webkitRequestFullscreen();
-        } else if (container.mozRequestFullScreen) {
-            container.mozRequestFullScreen();
-        } else if (container.msRequestFullscreen) {
-            container.msRequestFullscreen();
-        }
-    }
-
-    // Auto-enter fullscreen when video starts playing
+    document.documentElement.style.background = '#000';
+    document.documentElement.style.backgroundColor = '#000';
+    document.body.style.background = '#000';
+    document.body.style.backgroundColor = '#000';
+    
+    const video = document.querySelector('video');
+    
+    video.style.background = '#000';
+    video.style.backgroundColor = '#000';
+    
     video.addEventListener('loadeddata', () => {
-        video.play().then(() => {
-            // Small delay to ensure video is playing
-            setTimeout(() => {
-                enterFullscreen();
-            }, 500);
-        }).catch(e => {
-            console.log('Autoplay failed:', e);
-            // Try to play and enter fullscreen on first user interaction
-            document.addEventListener('touchstart', handleUserInteraction, { once: true });
-            document.addEventListener('click', handleUserInteraction, { once: true });
+        video.play().catch(() => {
+            document.addEventListener('click', () => video.play(), { once: true });
+            document.addEventListener('touchstart', () => video.play(), { once: true });
         });
     });
 
-    function handleUserInteraction() {
-        video.play().then(() => {
-            setTimeout(() => {
-                enterFullscreen();
-            }, 100);
-        });
-    }
-
-    // Prevent context menu
-    video.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
-
-    // Prevent scrolling/zooming
-    document.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('gesturestart', (e) => {
-        e.preventDefault();
-    });
-
-    // Handle fullscreen changes
-    document.addEventListener('fullscreenchange', () => {
-        if (document.fullscreenElement) {
-            console.log('Entered fullscreen');
-        } else {
-            console.log('Exited fullscreen');
-            // Re-enter fullscreen if video is still playing
-            if (!video.paused) {
-                setTimeout(enterFullscreen, 100);
-            }
-        }
-    });
-
-    document.addEventListener('webkitfullscreenchange', () => {
-        if (document.webkitFullscreenElement) {
-            console.log('Entered webkit fullscreen');
-        } else {
-            console.log('Exited webkit fullscreen');
-            if (!video.paused) {
-                setTimeout(enterFullscreen, 100);
-            }
-        }
-    });
-
-    // Try to enter fullscreen immediately when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            enterFullscreen();
-        }, 1000);
-    });
+    // Prevent context menu and interactions
+    video.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
 ```
 
