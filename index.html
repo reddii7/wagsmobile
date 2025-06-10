@@ -7,9 +7,14 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Full Screen Video</title>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-touch-fullscreen" content="yes">
     <style>
+        /* Force remove any default browser styling */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -26,12 +31,15 @@
 
     body {
         /* Cover the status bar area */
-        padding-top: 0;
+        padding: 0;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
+        /* Extend into status bar area */
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
 
     video {
@@ -61,20 +69,24 @@
         display: none !important;
     }
 
-    /* Ensure full coverage on mobile */
-    @media (max-width: 768px) {
-        video {
-            /* Extend beyond viewport to cover status bar */
-            height: calc(100vh + env(safe-area-inset-top));
-            margin-top: calc(-1 * env(safe-area-inset-top));
-        }
+    /* Ensure full coverage on mobile - cover status bar */
+    video {
+        /* Extend beyond viewport to cover status bar and notch */
+        width: 100vw;
+        height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom));
+        margin-top: calc(-1 * env(safe-area-inset-top));
+        top: 0;
+        left: 0;
     }
 
-    /* PWA/Standalone mode adjustments */
+    /* PWA/Standalone mode adjustments - still cover everything */
     @media (display-mode: standalone) {
+        body {
+            padding-top: 0 !important;
+        }
         video {
-            height: 100vh;
-            margin-top: 0;
+            height: calc(100vh + 50px);
+            margin-top: -25px;
         }
     }
 </style>
